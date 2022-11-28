@@ -56,6 +56,7 @@
         </Compile>
         <Compile Include="Program.cs"/>
         <Compile Include="Properties\AssemblyInfo.cs"/>
+        <Compile Include="Reducers\IColorReducer.cs"/>
         <EmbeddedResource Include="MainWindow.resx">
             <DependentUpon>MainWindow.cs</DependentUpon>
         </EmbeddedResource>
