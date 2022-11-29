@@ -23,7 +23,7 @@ namespace ColorReduction
                     true),
                 "Ordered dithering (consecutive)" => new OrderedDitheringReducer(options.KRed, options.KGreen,
                     options.KBlue, false),
-                "Error propagation" => new ErrorPropagationReducer(),
+                "Error propagation" => new ErrorPropagationReducer(options.KRed, options.KGreen, options.KBlue),
                 "Popularity algorithm" => new PopularityAlgorithmReducer(),
                 "None" => new NullReducer(),
                 _ => throw new ArgumentException(@$"Unrecognized algorithm type: {algorithmName}",

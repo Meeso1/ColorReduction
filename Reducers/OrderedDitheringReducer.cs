@@ -114,7 +114,7 @@ namespace ColorReduction.Reducers
 
             private int GetPatternThreshold(int x, int y)
             {
-                if (!(_random is { } random)) return _pattern[x % _patternSize, y % _patternSize];
+                if (_random is null) return _pattern[x % _patternSize, y % _patternSize];
                 var randX = _random.Next(_patternSize);
                 var randY = _random.Next(_patternSize);
                 return _pattern[randX, randY];
@@ -128,7 +128,7 @@ namespace ColorReduction.Reducers
                 var col = intensity / (_patternSize * _patternSize);
                 var re = intensity % (_patternSize * _patternSize);
 
-                return (int)(255.0 / (_levels - 1) * (re >= threshold ? col : col + 1));
+                return (int)(255.0 / (_levels - 1) * (re >= threshold ? col + 1 : col));
             }
         }
     }
