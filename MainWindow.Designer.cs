@@ -210,7 +210,7 @@ namespace ColorReduction
             // algorithmSwitch
             // 
             this.algorithmSwitch.FormattingEnabled = true;
-            this.algorithmSwitch.Items.AddRange(new object[] { "None", "Average dithering", "Ordered dithering (random position in pattern)", "Ordered dithering (consecutive position in pattern)", "Error propagation", "Popularity algorithm" });
+            this.algorithmSwitch.Items.AddRange(new object[] { "None", "Average dithering", "Ordered dithering (random)", "Ordered dithering (consecutive)", "Error propagation", "Popularity algorithm" });
             this.algorithmSwitch.Location = new System.Drawing.Point(6, 82);
             this.algorithmSwitch.Name = "algorithmSwitch";
             this.algorithmSwitch.Size = new System.Drawing.Size(145, 21);

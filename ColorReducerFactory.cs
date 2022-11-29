@@ -18,9 +18,11 @@ namespace ColorReduction
 
             return algorithmName switch
             {
-                "Average dithering" => new AverageDitheringReducer(),
-                "Ordered dithering (random)" => new OrderedDitheringReducer(),
-                "Ordered dithering (consecutive)" => new OrderedDitheringReducer(),
+                "Average dithering" => new AverageDitheringReducer(options.KRed, options.KGreen, options.KBlue),
+                "Ordered dithering (random)" => new OrderedDitheringReducer(options.KRed, options.KGreen, options.KBlue,
+                    true),
+                "Ordered dithering (consecutive)" => new OrderedDitheringReducer(options.KRed, options.KGreen,
+                    options.KBlue, false),
                 "Error propagation" => new ErrorPropagationReducer(),
                 "Popularity algorithm" => new PopularityAlgorithmReducer(),
                 "None" => new NullReducer(),

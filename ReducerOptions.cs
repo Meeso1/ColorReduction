@@ -18,7 +18,7 @@
         public bool Validate()
         {
             // TODO: Add some more validation
-            return KRed > 0 && KGreen > 0 && KBlue > 0 && KAll > 0;
+            return KRed > 1 && KGreen > 1 && KBlue > 1 && KAll > 1;
         }
     }
 }
