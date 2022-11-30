@@ -87,11 +87,12 @@ namespace ColorReduction.Reducers
                 var result = QuantizeComponent(_values[x, y], _levels);
                 var error = _values[x, y] - result;
 
-                for (var yf = -_filterY; yf < _filterY; yf++)
-                    for (var xf = -_filterX; xf < _filterX; xf++)
+                for (var yf = -_filterY; yf <= _filterY; yf++)
+                    for (var xf = -_filterX; xf <= _filterX; xf++)
                     {
                         if (x + xf < 0 || x + xf >= _sizeX || y + yf < 0 || y + yf >= _sizeY) continue;
-                        _values[x + xf, y + yf] += error / _filterSum * _filter[xf + _filterX, yf + _filterY];
+                        var change = error / _filterSum * _filter[xf + _filterX, yf + _filterY];
+                        _values[x + xf, y + yf] += change;
                     }
 
                 return result;

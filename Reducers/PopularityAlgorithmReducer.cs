@@ -15,11 +15,14 @@ namespace ColorReduction.Reducers
             _numOfColors = numOfColors;
         }
 
-        private static Color FindClosest(Color input, List<Color> palette)
+        private static Color FindClosest(Color input, IEnumerable<Color> palette)
         {
-            // TODO: Implement
-            // Some treee???
-            return Color.Blue;
+            double Distance(Color a, Color b)
+            {
+                return Math.Sqrt((a.R - b.R) * (a.R - b.R) + (a.G - b.G) * (a.G - b.G) + (a.B - b.B) * (a.B - b.B));
+            }
+
+            return palette.OrderBy(c => Distance(c, input)).First();
         }
 
         public override Bitmap Reduce(Bitmap image)
