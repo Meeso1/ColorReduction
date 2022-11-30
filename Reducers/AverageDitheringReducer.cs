@@ -3,7 +3,7 @@ using FastBitmapLib;
 
 namespace ColorReduction.Reducers
 {
-    public class AverageDitheringReducer : ColorReducer
+    public sealed class AverageDitheringReducer : IColorReducer
     {
         private readonly int _kBlue;
         private readonly int _kGreen;
@@ -16,15 +16,7 @@ namespace ColorReduction.Reducers
             _kBlue = kBlue;
         }
 
-        private static int QuantizeComponent(int value, int levels)
-        {
-            var width = 255.0 / (levels - 1);
-            var k = value / width;
-            var r = (int)k;
-            return (int)((k > r + 0.5 ? r + 1 : r) * width);
-        }
-
-        public override Bitmap Reduce(Bitmap image)
+        public Bitmap Reduce(Bitmap image)
         {
             var output = new Bitmap(image.Width, image.Height);
             using var bitmap = new FastBitmap(output);
@@ -34,14 +26,22 @@ namespace ColorReduction.Reducers
                 {
                     var color = image.GetPixel(x, y);
                     var newColor = Color.FromArgb(
-                        QuantizeComponent(color.R, _kRed),
-                        QuantizeComponent(color.G, _kGreen),
-                        QuantizeComponent(color.B, _kBlue)
+                        DitherComponentValue(color.R, _kRed),
+                        DitherComponentValue(color.G, _kGreen),
+                        DitherComponentValue(color.B, _kBlue)
                     );
                     output.SetPixel(x, y, newColor);
                 }
 
             return output;
+        }
+
+        private static int DitherComponentValue(int value, int levels)
+        {
+            var width = 255.0 / (levels - 1);
+            var k = value / width;
+            var r = (int)k;
+            return (int)((k > r + 0.5 ? r + 1 : r) * width);
         }
     }
 }

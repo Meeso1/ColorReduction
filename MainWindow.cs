@@ -15,24 +15,40 @@ namespace ColorReduction
         public MainWindow()
         {
             InitializeComponent();
+        }
 
-            inputPicture.Image = new Bitmap(inputPicture.Size.Width, inputPicture.Size.Height);
-            outputPicture.Image = new Bitmap(outputPicture.Size.Width, outputPicture.Size.Height);
+        private static Bitmap ResizeImage(Image image, Size size)
+        {
+            var inputRatio = image.Size.Height / (double)image.Size.Width;
+            var outputRatio = size.Height / (double)size.Width;
+
+            if (inputRatio > outputRatio)
+            {
+                // Match height
+                var width = image.Size.Width * (size.Height / (double)image.Size.Height);
+                return new Bitmap(image, new Size((int)width, size.Height));
+            }
+
+            // Match width
+            var height = image.Size.Height * (size.Width / (double)image.Size.Width);
+            return new Bitmap(image, new Size(size.Width, (int)height));
         }
 
         private void ImportImage(string filename)
         {
             chooseFileLabel.Text = Path.GetFileName(filename);
             outputPicture.Image = new Bitmap(outputPicture.Size.Width, outputPicture.Size.Height);
+            outputPicture.Refresh();
+
             inputPicture.Image = new Bitmap(filename);
-            _inputBitmap = new Bitmap(filename);
             inputPicture.Refresh();
 
+            _inputBitmap = ResizeImage(new Bitmap(filename), outputPicture.Size);
             _processingTime = null;
             RefreshProcessingTimeLabel();
         }
 
-        private void ProcessImage(Bitmap input, ColorReducer reducer)
+        private void ProcessImage(Bitmap input, IColorReducer reducer)
         {
             processingLabel.Visible = true;
             processingLabel.Refresh();
@@ -90,7 +106,9 @@ namespace ColorReduction
             _processingTime = null;
             RefreshProcessingTimeLabel();
 
-            var algorithmName = algorithmSwitch.SelectedItem as string ?? throw new InvalidOperationException();
+            var algorithmName = algorithmSwitch.SelectedItem as string ??
+                                throw new InvalidOperationException(
+                                    $"Selected object is not a string but {algorithmSwitch.SelectedItem.GetType().Name}");
             var reducer = ColorReducerFactory.Create(algorithmName, options);
             ProcessImage(_inputBitmap, reducer);
         }

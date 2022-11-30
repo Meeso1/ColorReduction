@@ -5,16 +5,10 @@ namespace ColorReduction
 {
     public static class ColorReducerFactory
     {
-        public static ColorReducer Create(string algorithmName, ReducerOptions options)
+        public static IColorReducer Create(string algorithmName, ReducerOptions options)
         {
             if (!options.Validate())
-                throw new InvalidOperationException(
-                    $"{nameof(ReducerOptions)} object was not validated. "
-                    + $"Contains values: {nameof(options.KRed)} = {options.KRed}, "
-                    + $"{nameof(options.KGreen)} = {options.KGreen}, "
-                    + $"{nameof(options.KBlue)} = {options.KBlue}, "
-                    + $"{nameof(options.KAll)} = {options.KAll}"
-                );
+                throw new ArgumentException(@$"{nameof(ReducerOptions)} object is not valid", nameof(options));
 
             return algorithmName switch
             {

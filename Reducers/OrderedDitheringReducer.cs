@@ -5,7 +5,7 @@ using FastBitmapLib;
 
 namespace ColorReduction.Reducers
 {
-    public sealed class OrderedDitheringReducer : ColorReducer
+    public sealed class OrderedDitheringReducer : IColorReducer
     {
         private readonly ValueDitherer _blue;
         private readonly ValueDitherer _green;
@@ -18,7 +18,7 @@ namespace ColorReduction.Reducers
             _blue = new ValueDitherer(kBlue, randomPosition);
         }
 
-        public override Bitmap Reduce(Bitmap image)
+        public Bitmap Reduce(Bitmap image)
         {
             var output = new Bitmap(image.Width, image.Height);
             using var bitmap = new FastBitmap(output);

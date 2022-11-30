@@ -6,7 +6,7 @@ using FastBitmapLib;
 
 namespace ColorReduction.Reducers
 {
-    public class PopularityAlgorithmReducer : ColorReducer
+    public sealed class PopularityAlgorithmReducer : IColorReducer
     {
         private readonly int _numOfColors;
 
@@ -15,10 +15,10 @@ namespace ColorReduction.Reducers
             _numOfColors = numOfColors;
         }
 
-        public override Bitmap Reduce(Bitmap image)
+        public Bitmap Reduce(Bitmap image)
         {
             var tree = new ColorTree(image, _numOfColors);
-            tree.InitPalette();
+            tree.ConstructColorPalette();
 
             var output = new Bitmap(image.Width, image.Height);
             using var bitmap = new FastBitmap(output);
@@ -49,7 +49,7 @@ namespace ColorReduction.Reducers
                 _paletteSize = paletteSize;
             }
 
-            public void InitPalette()
+            public void ConstructColorPalette()
             {
                 if (_palette is { }) return;
 
@@ -120,10 +120,12 @@ namespace ColorReduction.Reducers
                     if ((color.G & (128 >> _depth)) > 0) index += 2;
                     if ((color.B & (128 >> _depth)) > 0) index += 1;
 
+                    // TODO: Extract static Create() method
                     _children[index] ??= new Node(_depth + 1, color, leaves);
                     _children[index]!.Add(color, leaves);
                 }
 
+                // TODO: Use 'Color + bool' instead of 'Color?'
                 public void Clear()
                 {
                     Color = null;
@@ -143,10 +145,13 @@ namespace ColorReduction.Reducers
                     if ((color.G & (128 >> _depth)) > 0) index += 2;
                     if ((color.B & (128 >> _depth)) > 0) index += 1;
 
+                    // TODO: Move error check to ColorTree
                     return _children[index]?.FindLeaf(color) ??
                            throw new InvalidOperationException("Attempted to find unregistered color");
                 }
             }
+
+            // TODO: Leaf as a separate class
         }
     }
 }

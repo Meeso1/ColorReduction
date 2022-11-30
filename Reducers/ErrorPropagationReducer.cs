@@ -4,7 +4,7 @@ using FastBitmapLib;
 
 namespace ColorReduction.Reducers
 {
-    public class ErrorPropagationReducer : ColorReducer
+    public sealed class ErrorPropagationReducer : IColorReducer
     {
         private readonly int _kBlue;
         private readonly int _kGreen;
@@ -17,7 +17,7 @@ namespace ColorReduction.Reducers
             _kBlue = kBlue;
         }
 
-        public override Bitmap Reduce(Bitmap image)
+        public Bitmap Reduce(Bitmap image)
         {
             var red = new ValueDitherer(_kRed, image, c => c.R);
             var green = new ValueDitherer(_kGreen, image, c => c.G);
@@ -43,16 +43,17 @@ namespace ColorReduction.Reducers
         private sealed class ValueDitherer
         {
             private readonly int[,] _filter;
+            private readonly int _filterSizeX;
+            private readonly int _filterSizeY;
             private readonly int _filterSum;
-            private readonly int _filterX;
-            private readonly int _filterY;
             private readonly int _levels;
-            private readonly int _sizeX;
-            private readonly int _sizeY;
             private readonly double[,] _values;
+            private readonly int _valuesSizeX;
+            private readonly int _valuesSizeY;
 
             public ValueDitherer(int levels, Bitmap bitmap, Func<Color, int> selector)
             {
+                // Burkes filter
                 _filter = new[,]
                 {
                     { 0, 0, 2 },
@@ -62,19 +63,19 @@ namespace ColorReduction.Reducers
                     { 0, 4, 2 }
                 };
                 _filterSum = 32;
-                _filterX = 2;
-                _filterY = 1;
+                _filterSizeX = 2;
+                _filterSizeY = 1;
 
                 _levels = levels;
-                _sizeX = bitmap.Width;
-                _sizeY = bitmap.Height;
-                _values = new double[_sizeX, _sizeY];
-                for (var y = 0; y < _sizeY; y++)
-                    for (var x = 0; x < _sizeX; x++)
+                _valuesSizeX = bitmap.Width;
+                _valuesSizeY = bitmap.Height;
+                _values = new double[_valuesSizeX, _valuesSizeY];
+                for (var y = 0; y < _valuesSizeY; y++)
+                    for (var x = 0; x < _valuesSizeX; x++)
                         _values[x, y] = selector(bitmap.GetPixel(x, y));
             }
 
-            private static int QuantizeComponent(double value, int levels)
+            private static int DitherValue(double value, int levels)
             {
                 var width = 255.0 / (levels - 1);
                 var k = value / width;
@@ -84,18 +85,19 @@ namespace ColorReduction.Reducers
 
             public int GetValue(int x, int y)
             {
-                var result = QuantizeComponent(_values[x, y], _levels);
-                var error = _values[x, y] - result;
-
-                for (var yf = -_filterY; yf <= _filterY; yf++)
-                    for (var xf = -_filterX; xf <= _filterX; xf++)
-                    {
-                        if (x + xf < 0 || x + xf >= _sizeX || y + yf < 0 || y + yf >= _sizeY) continue;
-                        var change = error / _filterSum * _filter[xf + _filterX, yf + _filterY];
-                        _values[x + xf, y + yf] += change;
-                    }
-
+                var result = DitherValue(_values[x, y] < 255 ? _values[x, y] : 255, _levels);
+                PropagateError(x, y, _values[x, y] - result);
                 return result;
+            }
+
+            private void PropagateError(int x, int y, double error)
+            {
+                for (var yf = -_filterSizeY; yf <= _filterSizeY; yf++)
+                    for (var xf = -_filterSizeX; xf <= _filterSizeX; xf++)
+                    {
+                        if (x + xf < 0 || x + xf >= _valuesSizeX || y + yf < 0 || y + yf >= _valuesSizeY) continue;
+                        _values[x + xf, y + yf] += error / _filterSum * _filter[xf + _filterSizeX, yf + _filterSizeY];
+                    }
             }
         }
     }

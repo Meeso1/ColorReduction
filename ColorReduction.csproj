@@ -63,7 +63,7 @@
         <Compile Include="ReducerOptions.cs"/>
         <Compile Include="Reducers\AverageDitheringReducer.cs"/>
         <Compile Include="Reducers\ErrorPropagationReducer.cs"/>
-        <Compile Include="Reducers\ColorReducer.cs"/>
+        <Compile Include="Reducers\IColorReducer.cs"/>
         <Compile Include="Reducers\NullReducer.cs"/>
         <Compile Include="Reducers\OrderedDitheringReducer.cs"/>
         <Compile Include="Reducers\PopularityAlgorithmReducer.cs"/>
