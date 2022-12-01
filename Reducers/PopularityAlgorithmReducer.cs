@@ -37,14 +37,17 @@ namespace ColorReduction.Reducers
         private sealed class ColorTree
         {
             private readonly Bitmap _bitmap;
-            private readonly List<Node> _leaves = new List<Node>();
+            private readonly List<Leaf> _leaves = new List<Leaf>();
             private readonly int _paletteSize;
             private readonly Node _root;
             private List<Color>? _palette;
 
             public ColorTree(Bitmap bitmap, int paletteSize)
             {
-                _root = new Node(0, null, _leaves);
+                if (paletteSize < 1)
+                    throw new ArgumentException($"Palette size must be positive, but {paletteSize} was supplied");
+
+                _root = Node.CreateRoot();
                 _bitmap = bitmap;
                 _paletteSize = paletteSize;
             }
@@ -58,16 +61,20 @@ namespace ColorReduction.Reducers
                         _root.Add(_bitmap.GetPixel(x, y), _leaves);
 
                 _leaves.Sort((a, b) => a.Count - b.Count);
-                _palette = _leaves.Take(_paletteSize).Select(l => l.Color!.Value).ToList();
-                foreach (var leaf in _leaves.Skip(_paletteSize)) leaf.Clear();
+                _palette = _leaves.Take(_paletteSize).Select(l =>
+                {
+                    l.SetReduction(l.Color);
+                    return l.Color;
+                }).ToList();
             }
 
             public Color ReduceColor(Color color)
             {
-                var leaf = _root.FindLeaf(color);
-                if (leaf.Color is { }) return leaf.Color.Value;
+                var leaf = _root.FindLeaf(color) ??
+                           throw new InvalidOperationException("Attempted to find unregistered color");
+                if (leaf.Reduced) return leaf.Color;
                 var reduced = FindClosest(color);
-                leaf.Set(reduced);
+                leaf.SetReduction(reduced);
                 return color;
             }
 
@@ -80,78 +87,87 @@ namespace ColorReduction.Reducers
                     return (a.R - b.R) * (a.R - b.R) + (a.G - b.G) * (a.G - b.G) + (a.B - b.B) * (a.B - b.B);
                 }
 
-                return _palette.OrderBy(c => Distance(c, input)).First();
+                var minDistance = _palette.Min(c => Distance(c, input));
+                return _palette.First(c => Distance(c, input) <= minDistance);
             }
 
-            private sealed class Node
+            private class Node
             {
                 private readonly Node?[] _children;
                 private readonly int _depth;
 
-                public Node(int depth, Color? color, ICollection<Node> leaves)
+                protected Node(int depth, Node?[] children)
                 {
                     _depth = depth;
-
-                    if (depth == 8)
-                    {
-                        Color = color ?? throw new ArgumentException("Leaf must have color");
-                        Count = 1;
-                        _children = Array.Empty<Node?>();
-                        leaves.Add(this);
-                        return;
-                    }
-
-                    _children = new Node?[] { null, null, null, null, null, null, null, null };
+                    _children = children;
                 }
 
-                public int Count { get; private set; }
-                public Color? Color { get; private set; }
-
-                public void Add(Color color, ICollection<Node> leaves)
+                private Node(int depth) : this(depth, new Node?[] { null, null, null, null, null, null, null, null })
                 {
-                    if (_depth == 8)
-                    {
-                        Count++;
-                        return;
-                    }
+                }
 
+                public static Node CreateRoot()
+                {
+                    return new Node(0);
+                }
+
+                private static Node Create(int depth, Color color, ICollection<Leaf> leaves)
+                {
+                    if (depth != 8) return new Node(depth);
+                    var leaf = new Leaf(depth, color);
+                    leaves.Add(leaf);
+                    return leaf;
+                }
+
+                public virtual void Add(Color color, ICollection<Leaf> leaves)
+                {
                     var index = 0;
                     if ((color.R & (128 >> _depth)) > 0) index += 4;
                     if ((color.G & (128 >> _depth)) > 0) index += 2;
                     if ((color.B & (128 >> _depth)) > 0) index += 1;
 
-                    // TODO: Extract static Create() method
-                    _children[index] ??= new Node(_depth + 1, color, leaves);
+                    _children[index] ??= Create(_depth + 1, color, leaves);
                     _children[index]!.Add(color, leaves);
                 }
 
-                // TODO: Use 'Color + bool' instead of 'Color?'
-                public void Clear()
+                public virtual Leaf? FindLeaf(Color color)
                 {
-                    Color = null;
-                }
+                    var index = 0;
+                    if ((color.R & (128 >> _depth)) > 0) index += 4;
+                    if ((color.G & (128 >> _depth)) > 0) index += 2;
+                    if ((color.B & (128 >> _depth)) > 0) index += 1;
 
-                public void Set(Color color)
+                    return _children[index]?.FindLeaf(color);
+                }
+            }
+
+            private sealed class Leaf : Node
+            {
+                public Leaf(int depth, Color color) : base(depth, Array.Empty<Node?>())
                 {
                     Color = color;
                 }
 
-                public Node FindLeaf(Color color)
+                public int Count { get; private set; }
+                public Color Color { get; private set; }
+                public bool Reduced { get; private set; }
+
+                public void SetReduction(Color reduced)
                 {
-                    if (_depth == 8) return this;
+                    Color = reduced;
+                    Reduced = true;
+                }
 
-                    var index = 0;
-                    if ((color.R & (128 >> _depth)) > 0) index += 4;
-                    if ((color.G & (128 >> _depth)) > 0) index += 2;
-                    if ((color.B & (128 >> _depth)) > 0) index += 1;
+                public override void Add(Color color, ICollection<Leaf> leaves)
+                {
+                    Count++;
+                }
 
-                    // TODO: Move error check to ColorTree
-                    return _children[index]?.FindLeaf(color) ??
-                           throw new InvalidOperationException("Attempted to find unregistered color");
+                public override Leaf FindLeaf(Color color)
+                {
+                    return this;
                 }
             }
-
-            // TODO: Leaf as a separate class
         }
     }
 }

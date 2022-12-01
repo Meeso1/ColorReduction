@@ -7,6 +7,7 @@ using ColorReduction.Reducers;
 
 namespace ColorReduction
 {
+    // TODO: Add 'MainWindow.resx' to git
     public partial class MainWindow : Form
     {
         private Bitmap? _inputBitmap;
