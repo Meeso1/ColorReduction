@@ -30,6 +30,13 @@ namespace ColorReduction
         private void InitializeComponent()
         {
             this.controls = new System.Windows.Forms.GroupBox();
+            this.Ycbcr = new System.Windows.Forms.GroupBox();
+            this.decodeButton = new System.Windows.Forms.Button();
+            this.crInputButton = new System.Windows.Forms.Button();
+            this.cbInputButton = new System.Windows.Forms.Button();
+            this.yInputButton = new System.Windows.Forms.Button();
+            this.inputImagesLabel = new System.Windows.Forms.Label();
+            this.decodeCheckBox = new System.Windows.Forms.CheckBox();
             this.processingTimeLabel = new System.Windows.Forms.Label();
             this.chooseFileButton = new System.Windows.Forms.Button();
             this.chooseFileLabel = new System.Windows.Forms.Label();
@@ -49,14 +56,22 @@ namespace ColorReduction
             this.outputPicture = new System.Windows.Forms.PictureBox();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.processingLabel = new System.Windows.Forms.Label();
+            this.outputCr = new System.Windows.Forms.PictureBox();
+            this.outputCb = new System.Windows.Forms.PictureBox();
+            this.outputY = new System.Windows.Forms.PictureBox();
             this.controls.SuspendLayout();
+            this.Ycbcr.SuspendLayout();
             this.parameters.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.inputPicture)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.outputPicture)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.outputCr)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.outputCb)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.outputY)).BeginInit();
             this.SuspendLayout();
             // 
             // controls
             // 
+            this.controls.Controls.Add(this.Ycbcr);
             this.controls.Controls.Add(this.processingTimeLabel);
             this.controls.Controls.Add(this.chooseFileButton);
             this.controls.Controls.Add(this.chooseFileLabel);
@@ -70,6 +85,86 @@ namespace ColorReduction
             this.controls.TabIndex = 0;
             this.controls.TabStop = false;
             this.controls.Text = "Options";
+            // 
+            // Ycbcr
+            // 
+            this.Ycbcr.Controls.Add(this.decodeButton);
+            this.Ycbcr.Controls.Add(this.crInputButton);
+            this.Ycbcr.Controls.Add(this.cbInputButton);
+            this.Ycbcr.Controls.Add(this.yInputButton);
+            this.Ycbcr.Controls.Add(this.inputImagesLabel);
+            this.Ycbcr.Controls.Add(this.decodeCheckBox);
+            this.Ycbcr.Location = new System.Drawing.Point(7, 268);
+            this.Ycbcr.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Ycbcr.Name = "Ycbcr";
+            this.Ycbcr.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Ycbcr.Size = new System.Drawing.Size(144, 176);
+            this.Ycbcr.TabIndex = 8;
+            this.Ycbcr.TabStop = false;
+            this.Ycbcr.Text = "Y Cb Cr";
+            // 
+            // decodeButton
+            // 
+            this.decodeButton.Location = new System.Drawing.Point(6, 145);
+            this.decodeButton.Name = "decodeButton";
+            this.decodeButton.Size = new System.Drawing.Size(133, 23);
+            this.decodeButton.TabIndex = 11;
+            this.decodeButton.Text = "Apply";
+            this.decodeButton.UseVisualStyleBackColor = true;
+            this.decodeButton.Click += new System.EventHandler(this.decodeButton_Click);
+            // 
+            // crInputButton
+            // 
+            this.crInputButton.Enabled = false;
+            this.crInputButton.Location = new System.Drawing.Point(6, 116);
+            this.crInputButton.Name = "crInputButton";
+            this.crInputButton.Size = new System.Drawing.Size(133, 23);
+            this.crInputButton.TabIndex = 10;
+            this.crInputButton.Text = "Choose Cr file";
+            this.crInputButton.UseVisualStyleBackColor = true;
+            this.crInputButton.Click += new System.EventHandler(this.crInputButton_Click);
+            // 
+            // cbInputButton
+            // 
+            this.cbInputButton.Enabled = false;
+            this.cbInputButton.Location = new System.Drawing.Point(6, 86);
+            this.cbInputButton.Name = "cbInputButton";
+            this.cbInputButton.Size = new System.Drawing.Size(133, 23);
+            this.cbInputButton.TabIndex = 9;
+            this.cbInputButton.Text = "Choose Cb file";
+            this.cbInputButton.UseVisualStyleBackColor = true;
+            this.cbInputButton.Click += new System.EventHandler(this.cbInputButton_Click);
+            // 
+            // yInputButton
+            // 
+            this.yInputButton.Enabled = false;
+            this.yInputButton.Location = new System.Drawing.Point(6, 57);
+            this.yInputButton.Name = "yInputButton";
+            this.yInputButton.Size = new System.Drawing.Size(133, 23);
+            this.yInputButton.TabIndex = 8;
+            this.yInputButton.Text = "Choose Y file";
+            this.yInputButton.UseVisualStyleBackColor = true;
+            this.yInputButton.Click += new System.EventHandler(this.yInputButton_Click);
+            // 
+            // inputImagesLabel
+            // 
+            this.inputImagesLabel.Location = new System.Drawing.Point(6, 38);
+            this.inputImagesLabel.Name = "inputImagesLabel";
+            this.inputImagesLabel.Size = new System.Drawing.Size(133, 17);
+            this.inputImagesLabel.TabIndex = 7;
+            this.inputImagesLabel.Text = "Input images";
+            this.inputImagesLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // decodeCheckBox
+            // 
+            this.decodeCheckBox.Location = new System.Drawing.Point(6, 18);
+            this.decodeCheckBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.decodeCheckBox.Name = "decodeCheckBox";
+            this.decodeCheckBox.Size = new System.Drawing.Size(130, 17);
+            this.decodeCheckBox.TabIndex = 0;
+            this.decodeCheckBox.Text = "Decode";
+            this.decodeCheckBox.UseVisualStyleBackColor = true;
+            this.decodeCheckBox.CheckedChanged += new System.EventHandler(this.encodeCheckBox_CheckedChanged);
             // 
             // processingTimeLabel
             // 
@@ -245,27 +340,78 @@ namespace ColorReduction
             this.processingLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.processingLabel.Visible = false;
             // 
+            // outputCr
+            // 
+            this.outputCr.Location = new System.Drawing.Point(737, 305);
+            this.outputCr.Name = "outputCr";
+            this.outputCr.Size = new System.Drawing.Size(223, 293);
+            this.outputCr.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.outputCr.TabIndex = 4;
+            this.outputCr.TabStop = false;
+            this.outputCr.Visible = false;
+            // 
+            // outputCb
+            // 
+            this.outputCb.Location = new System.Drawing.Point(849, 12);
+            this.outputCb.Name = "outputCb";
+            this.outputCb.Size = new System.Drawing.Size(223, 293);
+            this.outputCb.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.outputCb.TabIndex = 5;
+            this.outputCb.TabStop = false;
+            this.outputCb.Visible = false;
+            // 
+            // outputY
+            // 
+            this.outputY.Location = new System.Drawing.Point(626, 12);
+            this.outputY.Name = "outputY";
+            this.outputY.Size = new System.Drawing.Size(223, 293);
+            this.outputY.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.outputY.TabIndex = 6;
+            this.outputY.TabStop = false;
+            this.outputY.Visible = false;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1084, 611);
+            this.ClientSize = new System.Drawing.Size(1082, 605);
+            this.Controls.Add(this.outputY);
+            this.Controls.Add(this.outputCb);
+            this.Controls.Add(this.outputCr);
             this.Controls.Add(this.processingLabel);
             this.Controls.Add(this.outputPicture);
             this.Controls.Add(this.inputPicture);
             this.Controls.Add(this.controls);
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(1100, 650);
-            this.MinimumSize = new System.Drawing.Size(1100, 650);
+            this.MaximumSize = new System.Drawing.Size(1098, 644);
+            this.MinimumSize = new System.Drawing.Size(1098, 644);
             this.Name = "MainWindow";
             this.Text = "MainWindow";
             this.controls.ResumeLayout(false);
+            this.Ycbcr.ResumeLayout(false);
             this.parameters.ResumeLayout(false);
             this.parameters.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.inputPicture)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.outputPicture)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.outputCr)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.outputCb)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.outputY)).EndInit();
             this.ResumeLayout(false);
         }
+
+        private System.Windows.Forms.PictureBox outputCr;
+        private System.Windows.Forms.PictureBox outputCb;
+        private System.Windows.Forms.PictureBox outputY;
+
+        private System.Windows.Forms.Button decodeButton;
+
+        private System.Windows.Forms.Button yInputButton;
+        private System.Windows.Forms.Button crInputButton;
+
+        private System.Windows.Forms.GroupBox Ycbcr;
+        private System.Windows.Forms.CheckBox decodeCheckBox;
+        private System.Windows.Forms.Button cbInputButton;
+        private System.Windows.Forms.Label inputImagesLabel;
 
         private System.Windows.Forms.Label processingLabel;
 

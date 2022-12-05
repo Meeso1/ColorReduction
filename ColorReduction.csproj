@@ -67,6 +67,9 @@
         <Compile Include="Reducers\NullReducer.cs"/>
         <Compile Include="Reducers\OrderedDitheringReducer.cs"/>
         <Compile Include="Reducers\PopularityAlgorithmReducer.cs"/>
+        <Compile Include="YcbcrEncoder.cs"/>
+        <Compile Include="YcbcrImages.cs"/>
+        <Compile Include="YcbcrWriter.cs"/>
         <EmbeddedResource Include="MainWindow.resx">
             <DependentUpon>MainWindow.cs</DependentUpon>
         </EmbeddedResource>
