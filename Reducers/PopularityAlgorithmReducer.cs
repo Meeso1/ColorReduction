@@ -60,7 +60,7 @@ namespace ColorReduction.Reducers
                     for (var x = 0; x < _bitmap.Width; x++)
                         _root.Add(_bitmap.GetPixel(x, y), _leaves);
 
-                _leaves.Sort((a, b) => a.Count - b.Count);
+                _leaves.Sort((a, b) => b.Count - a.Count);
                 _palette = _leaves.Take(_paletteSize).Select(l =>
                 {
                     l.SetReduction(l.Color);
